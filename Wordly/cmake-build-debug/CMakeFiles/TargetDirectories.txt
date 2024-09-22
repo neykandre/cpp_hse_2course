@@ -1,0 +1,4 @@
+/home/andre/CLionProjects/untitled4/Wordly/cmake-build-debug/CMakeFiles/WordlySimulator.dir
+/home/andre/CLionProjects/untitled4/Wordly/cmake-build-debug/CMakeFiles/wordly.dir
+/home/andre/CLionProjects/untitled4/Wordly/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/andre/CLionProjects/untitled4/Wordly/cmake-build-debug/CMakeFiles/rebuild_cache.dir

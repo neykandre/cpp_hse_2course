@@ -1,0 +1,8 @@
+//
+// Created by andre on 21.09.24.
+//
+
+#ifndef WORDLYSIMULATOR_WORDLY_HPP
+#define WORDLYSIMULATOR_WORDLY_HPP
+
+#endif //WORDLYSIMULATOR_WORDLY_HPP
