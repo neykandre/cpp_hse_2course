@@ -1,2 +1,11 @@
 # ninja log v5
+3	28	1727376785592697319	CMakeFiles/Wordly.dir/src/Dictionary.cpp.o	4e69bb636229399f
+6	5465	1727377304274494071	CMakeFiles/Wordly.dir/src/Parser.cpp.o	646aa0c808eaec26
+2	40	1727430007273997062	build.ninja	7ad8067bf6816d9a
+5548	5779	1727377304593498562	WordlySimulator	b90278bda753678c
 675	790	1726916578901787025	untitled4	a81d82b2c16d0d59
+5465	5548	1727377304361495296	libWordly.a	e239b10609e1fdd5
+3	1667	1727376816859205552	CMakeFiles/WordlySimulator.dir/main.cpp.o	ec9a51d2ce2b413c
+4	30	1727376785593697335	CMakeFiles/Wordly.dir/src/Game.cpp.o	bbe3e7fda54836d4
+8	3366	1727432265288466362	CMakeFiles/WordlySimulator.dir/main.cpp.o	ec9a51d2ce2b413c
+4	6869	1727432268788282443	CMakeFiles/Wordly.dir/src/Parser.cpp.o	646aa0c808eaec26

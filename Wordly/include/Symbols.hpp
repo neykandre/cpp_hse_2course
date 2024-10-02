@@ -1,8 +1,9 @@
-//
-// Created by andre on 27.09.24.
-//
+#pragma once
 
-#ifndef WORDLYSIMULATOR_SYMBOLS_HPP
-#define WORDLYSIMULATOR_SYMBOLS_HPP
-
-#endif //WORDLYSIMULATOR_SYMBOLS_HPP
+namespace wordly {
+    enum class Symbol {
+        match = '*',
+        miss = '-',
+        appear = '+'
+    };
+}

@@ -2,46 +2,23 @@
 
 #include <string>
 #include <vector>
-#include <fstream>
-#include <regex>
 #include <random>
+#include <memory>
 
-class NoSuchWordException : public std::runtime_error {
-public:
-    explicit NoSuchWordException(const std::string& path) : std::runtime_error{"No such file: " + path} {};
-};
+namespace wordly {
+    class Dictionary {
+    public:
+        std::string get_word();
 
-class Dictionary {
-public:
-    explicit Dictionary(const std::string& path)
-    {
-        std::ifstream file{path};
-        if (!file) {
-            throw NoSuchWordException{path};
-        }
+        static std::shared_ptr<Dictionary> create_from_file(const std::string&);
 
-        std::ostringstream stream;
-        stream << file.rdbuf();
+        static std::shared_ptr<Dictionary> create_from_vector(const std::vector<std::string>&);
 
-        std::regex word_regex{R"(\w+)"};
+    private:
+        explicit Dictionary(const std::string&) noexcept;
 
-        std::string word;
-        auto words_begin = std::sregex_iterator(stream.str().begin(), stream.str().end(), word_regex);
-        auto words_end = std::sregex_iterator();
+        explicit Dictionary(const std::vector<std::string>&) noexcept;
 
-        for (auto it = words_begin; it != words_end; ++it) {
-            std::smatch match = *it;
-            words_.push_back(match.str());
-        }
-    }
-
-    std::string get_random_word() const {
-        std::random_device rd;
-        std::default_random_engine gen{rd()};
-        std::uniform_int_distribution<size_t> dist{0, words_.size() - 1};
-        return words_[dist(gen)];
-    }
-
-private:
-    std::vector<std::string> words_;
-};
+        std::vector<std::string> words_;
+    };
+}

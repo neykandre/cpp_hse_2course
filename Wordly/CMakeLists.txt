@@ -3,6 +3,6 @@ project(WordlySimulator)
 
 set(CMAKE_CXX_STANDARD 23)
 
+add_library(Wordly STATIC src/Parser.cpp src/Dictionary.cpp src/Game.cpp)
 add_executable(WordlySimulator main.cpp)
-add_library(wordly src/Dictionary.cpp src/Game.cpp
-        src/Parser.cpp)
+target_link_libraries(WordlySimulator Wordly)
