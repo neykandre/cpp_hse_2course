@@ -2,10 +2,12 @@
 #include <cassert>
 #include <iostream>
 
+
 #ifdef TEST
 int main() {
     std::vector<int> stack = {1, 2, 3};
     auto test1 = compile("1 2 3 + -111 - * 10 %");
+    test1 = optimize(test1);
     auto sixs = test1 | test1 | compile("6");
     sixs = sixs | compile("dup");
     for (auto i: sixs->apply(stack)) {

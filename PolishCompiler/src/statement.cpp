@@ -31,7 +31,7 @@ std::shared_ptr<Statement> compile(std::string_view str) {
             combine->add(std::make_shared<ConstOp>(std::stoi(it->str())));
         } else {
             std::cout << "Compile error: " << it->str() << "unknown token\n" << std::endl;
-            exit(0);
+            exit(1);
         }
     }
     return combine;
@@ -39,21 +39,21 @@ std::shared_ptr<Statement> compile(std::string_view str) {
 
 std::shared_ptr<Statement> operator|(std::shared_ptr<Statement> lhs, std::shared_ptr<Statement> rhs) {
     auto result_combine = std::make_shared<Combine>();
-    auto lhs_combine = dynamic_cast<Combine*>(lhs.get());
-    auto rhs_combine = dynamic_cast<Combine*>(rhs.get());
+    auto lhs_combine = dynamic_pointer_cast<Combine>(lhs);
+    auto rhs_combine = dynamic_pointer_cast<Combine>(rhs);
 
-    if (lhs_combine == nullptr) {
+    if (!lhs_combine) {
         result_combine->add(lhs);
     } else {
-        for (auto& i: lhs_combine->conveyor) {
+        for (auto& i: *lhs_combine) {
             result_combine->add(i);
         }
     }
 
-    if (rhs_combine == nullptr) {
+    if (!rhs_combine) {
         result_combine->add(rhs);
     } else {
-        for (auto& i: rhs_combine->conveyor) {
+        for (auto& i: *rhs_combine) {
             result_combine->add(i);
         }
     }
@@ -62,5 +62,30 @@ std::shared_ptr<Statement> operator|(std::shared_ptr<Statement> lhs, std::shared
 }
 
 std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
-    return stmt;
+    auto stmt_combine = dynamic_cast<Combine*>(stmt.get());
+    if (!stmt_combine) {
+        return stmt;
+    }
+
+    std::vector<int> my_stack;
+    auto result_combine = std::make_shared<Combine>();
+
+    for (auto& i: *stmt_combine) {
+        if (i->is_pure() && i->get_arguments_count() <= my_stack.size()) {
+            my_stack = i->apply(std::move(my_stack));
+        }
+        else {
+            for (auto j: my_stack) {
+                result_combine->add(std::make_shared<ConstOp>(j));
+            }
+            my_stack.clear();
+            result_combine->add(i);
+        }
+    }
+
+    for (auto j: my_stack) {
+        result_combine->add(std::make_shared<ConstOp>(j));
+    }
+
+    return result_combine;
 }

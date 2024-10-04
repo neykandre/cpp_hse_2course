@@ -27,10 +27,10 @@ DupOp::DupOp()
         : Statement(1, 2, true) {};
 
 std::vector<int> DupOp::apply(std::vector<int> in) const {
-    if (in.empty()) {
-        std::cout << "Duplicate Error: not enough arguments" << std::endl;
-        exit(1);
-    }
+//    if (in.empty()) {
+//        std::cout << "Duplicate Error: not enough arguments" << std::endl;
+//        exit(1);
+//    }
     in.push_back(in.back());
     return in;
 }
@@ -39,28 +39,11 @@ AbsOp::AbsOp()
         : Statement(1, 1, true) {};
 
 std::vector<int> AbsOp::apply(std::vector<int> in) const {
-    if (in.empty()) {
-        std::cout << "Absolute Error: not enough arguments" << std::endl;
-        exit(1);
-    }
+//    if (in.empty()) {
+//        std::cout << "Absolute Error: not enough arguments" << std::endl;
+//        exit(1);
+//    }
     in.back() = std::abs(in.back());
-    return in;
-}
-
-template<auto func>
-BinaryOp<func>::BinaryOp()
-        : Statement(2, 1, true) {};
-
-template<auto func>
-std::vector<int> BinaryOp<func>::apply(std::vector<int> in) const {
-    if (in.size() < 2) {
-        std::cout << "BinaryOp Error: not enough arguments" << std::endl;
-        exit(1);
-    }
-    int result = func(in[in.size() - 2], in.back());
-    in.pop_back();
-    in.pop_back();
-    in.push_back(result);
     return in;
 }
 
@@ -90,8 +73,10 @@ std::vector<int> Combine::apply(std::vector<int> in) const {
     return in;
 }
 
-template class BinaryOp<std::plus<>{}>;
-template class BinaryOp<std::minus<>{}>;
-template class BinaryOp<std::multiplies<>{}>;
-template class BinaryOp<std::modulus<>{}>;
-template class BinaryOp<std::divides<>{}>;
+Combine::iterator Combine::begin() {
+    return conveyor.begin();
+}
+
+Combine::iterator Combine::end() {
+    return conveyor.end();
+}
