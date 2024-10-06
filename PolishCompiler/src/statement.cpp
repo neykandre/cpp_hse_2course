@@ -39,33 +39,28 @@ std::shared_ptr<Statement> compile(std::string_view str) {
 
 std::shared_ptr<Statement> operator|(std::shared_ptr<Statement> lhs, std::shared_ptr<Statement> rhs) {
     auto result_combine = std::make_shared<Combine>();
-    auto lhs_combine = dynamic_pointer_cast<Combine>(lhs);
-    auto rhs_combine = dynamic_pointer_cast<Combine>(rhs);
-
-    if (!lhs_combine) {
-        result_combine->add(lhs);
-    } else {
-        for (auto& i: *lhs_combine) {
-            result_combine->add(i);
-        }
-    }
-
-    if (!rhs_combine) {
-        result_combine->add(rhs);
-    } else {
-        for (auto& i: *rhs_combine) {
-            result_combine->add(i);
-        }
-    }
+    result_combine->add(lhs);
+    result_combine->add(rhs);
 
     return result_combine;
 }
 
-std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
-    auto stmt_combine = dynamic_cast<Combine*>(stmt.get());
+void expand(std::shared_ptr<Statement> stmt, std::shared_ptr<Combine> result) {
+    auto stmt_combine = dynamic_pointer_cast<Combine>(stmt);
     if (!stmt_combine) {
-        return stmt;
+        result->add(stmt);
+        return;
     }
+
+    for (auto& i: *stmt_combine) {
+        expand(i, result);
+    }   
+}
+
+std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
+    auto stmt_combine = std::make_shared<Combine>();
+
+    expand(stmt, stmt_combine);
 
     std::vector<int> my_stack;
     auto result_combine = std::make_shared<Combine>();

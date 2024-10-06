@@ -39,6 +39,7 @@ public:
     BinaryOp()
             : Statement(2, 1, true) {};
 
+
     [[nodiscard]] std::vector<int> apply(std::vector<int> in) const override {
 //        if (in.size() < 2) {
 //            std::cout << "BinaryOp Error: not enough arguments" << std::endl;
@@ -48,6 +49,11 @@ public:
         in.pop_back();
         in.pop_back();
         in.push_back(result);
+
+        std::vector<int> in2(in.begin(), in.end());
+        in2.pop_back();
+        in2.pop_back();
+        in2.push_back(result);
         return in;
     }
 };
