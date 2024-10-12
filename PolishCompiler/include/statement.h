@@ -23,6 +23,7 @@ public:
     unsigned get_results_count() const {
         return results;
     }
+
 protected:
     unsigned arguments;
     unsigned results;

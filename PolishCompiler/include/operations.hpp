@@ -9,6 +9,8 @@ class ConstOp : public Statement {
 public:
     explicit ConstOp(int v);
 
+    friend std::string stmt_to_string(std::shared_ptr<Statement> stmt);
+
     [[nodiscard]] std::vector<int> apply(std::vector<int> in) const override;
 };
 
@@ -50,10 +52,6 @@ public:
         in.pop_back();
         in.push_back(result);
 
-        std::vector<int> in2(in.begin(), in.end());
-        in2.pop_back();
-        in2.pop_back();
-        in2.push_back(result);
         return in;
     }
 };
@@ -75,3 +73,5 @@ public:
     iterator end();
 
 };
+
+std::string comb_to_string(std::shared_ptr<Statement> stmt);

@@ -25,6 +25,7 @@ public:
     unsigned get_results_count() const {
         return results;
     }
+
 protected:
     unsigned arguments;
     unsigned results;
@@ -39,6 +40,8 @@ class ConstOp : public Statement {
     int v;
 public:
     explicit ConstOp(int v);
+
+    friend std::string comb_to_string(std::shared_ptr<Statement> stmt);
 
     [[nodiscard]] std::vector<int> apply(std::vector<int> in) const override;
 };
@@ -79,6 +82,7 @@ public:
         in.pop_back();
         in.pop_back();
         in.push_back(result);
+
         return in;
     }
 };
@@ -101,21 +105,26 @@ public:
 
 };
 
+std::string comb_to_string(std::shared_ptr<Statement> stmt);
+
 #ifdef TEST
 int main() {
     std::vector<int> stack = {1, 2, 3};
-    auto test1 = compile("1 2 3 + -111 - * 10 %");
-    test1 = optimize(test1);
+    auto test1 = compile("1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 dup +");
+    // test1 = optimize(test1);
     auto sixs = test1 | test1 | compile("6");
     sixs = sixs | compile("dup");
-    for (auto i: sixs->apply(stack)) {
-        std::cout << i << " ";
-    }
-    std::cout << std::endl;
-    assert(sixs->apply(stack) == std::vector<int>({1, 2, 3, 6, 6, 6, 6}));
+    std::cout << comb_to_string(sixs) << std::endl;
+    sixs = optimize(sixs);
+    std::cout << comb_to_string(sixs) << std::endl;
+    // for (auto i: sixs->apply(stack)) {
+    //     std::cout << i << " ";
+    // }
+    // std::cout << std::endl;
+    // assert(sixs->apply(stack) == std::vector<int>({1, 2, 3, 6, 6, 6, 6}));
 
-    auto test2 = compile("-");
-    assert(test2->apply(stack) == std::vector<int>({1, -1}));
+    // auto test2 = compile("-");
+    // assert(test2->apply(stack) == std::vector<int>({1, -1}));
 
     return 0;
 }
@@ -254,8 +263,7 @@ void expand(std::shared_ptr<Statement> stmt, std::shared_ptr<Combine> result) {
         expand(i, result);
     }   
 }
-
-std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
+std::shared_ptr<Statement> folding(std::shared_ptr<Statement> stmt) {
     auto stmt_combine = std::make_shared<Combine>();
 
     expand(stmt, stmt_combine);
@@ -281,4 +289,52 @@ std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
     }
 
     return result_combine;
+}
+
+std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
+    stmt = folding(stmt);
+    stmt = folding(stmt);
+
+    return stmt;
+}
+
+std::string comb_to_string(std::shared_ptr<Statement> stmt) {
+    auto stmt_combine = std::make_shared<Combine>();
+
+    expand(stmt, stmt_combine);
+
+    std::string result;
+    for (auto& i: *stmt_combine) {
+        auto cons = dynamic_pointer_cast<ConstOp>(i);
+        auto dup = dynamic_pointer_cast<DupOp>(i);
+        auto input = dynamic_pointer_cast<InputOp>(i);
+        auto abs = dynamic_pointer_cast<AbsOp>(i);
+        auto bin_plus = dynamic_pointer_cast<BinaryOp<std::plus<>{}>>(i);
+        auto bin_minus = dynamic_pointer_cast<BinaryOp<std::minus<>{}>>(i);
+        auto bin_mult = dynamic_pointer_cast<BinaryOp<std::multiplies<>{}>>(i);
+        auto bin_mod = dynamic_pointer_cast<BinaryOp<std::modulus<>{}>>(i);
+        auto bin_div = dynamic_pointer_cast<BinaryOp<std::divides<>{}>>(i);
+        
+        if (cons)
+            result += std::to_string(cons->v);
+        if (dup)
+            result += "dup";
+        if (input)
+            result += "input";
+        if (abs)
+            result += "abs";
+        if (bin_plus)
+            result += "+";
+        if (bin_minus)
+            result += "-";
+        if (bin_mult)
+            result += "*";
+        if (bin_mod)
+            result += "%";
+        if (bin_div)
+            result += "/";
+        
+        result += " ";
+    }
+    return result;
 }

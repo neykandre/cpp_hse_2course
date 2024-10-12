@@ -56,8 +56,7 @@ void expand(std::shared_ptr<Statement> stmt, std::shared_ptr<Combine> result) {
         expand(i, result);
     }   
 }
-
-std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
+std::shared_ptr<Statement> folding(std::shared_ptr<Statement> stmt) {
     auto stmt_combine = std::make_shared<Combine>();
 
     expand(stmt, stmt_combine);
@@ -83,4 +82,81 @@ std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
     }
 
     return result_combine;
+}
+
+// std::shared_ptr<Statement> extra_folding(std::shared_ptr<Statement> stmt) {
+//     auto stmt_combine = std::make_shared<Combine>();
+
+//     expand(stmt, stmt_combine);
+
+//     std::vector<int> add_stack {0};
+//     std::vector<int> mult_stack {1};
+//     auto result_combine = std::make_shared<Combine>();
+
+//     for (auto& i: *stmt_combine) {
+//         if (i->is_pure() && ) {
+//     }
+
+//     for (auto j: my_stack) {
+//         result_combine->add(std::make_shared<ConstOp>(j));
+//     }
+
+//     return result_combine;
+// }
+
+
+
+std::shared_ptr<Statement> optimize(std::shared_ptr<Statement> stmt) {
+    stmt = folding(stmt);
+    stmt = folding(stmt);
+
+    return stmt;
+}
+
+std::string stmt_to_string(std::shared_ptr<Statement> stmt) {
+    std::string result = "";
+    auto cons = dynamic_pointer_cast<ConstOp>(stmt);
+    auto dup = dynamic_pointer_cast<DupOp>(stmt);
+    auto input = dynamic_pointer_cast<InputOp>(stmt);
+    auto abs = dynamic_pointer_cast<AbsOp>(stmt);
+    auto bin_plus = dynamic_pointer_cast<BinaryOp<std::plus<>{}>>(stmt);
+    auto bin_minus = dynamic_pointer_cast<BinaryOp<std::minus<>{}>>(stmt);
+    auto bin_mult = dynamic_pointer_cast<BinaryOp<std::multiplies<>{}>>(stmt);
+    auto bin_mod = dynamic_pointer_cast<BinaryOp<std::modulus<>{}>>(stmt);
+    auto bin_div = dynamic_pointer_cast<BinaryOp<std::divides<>{}>>(stmt);
+    
+    if (cons)
+        result += std::to_string(cons->v);
+    if (dup)
+        result += "dup";
+    if (input)
+        result += "input";
+    if (abs)
+        result += "abs";
+    if (bin_plus)
+        result += "+";
+    if (bin_minus)
+        result += "-";
+    if (bin_mult)
+        result += "*";
+    if (bin_mod)
+        result += "%";
+    if (bin_div)
+        result += "/";
+
+    return result;
+}
+
+std::string comb_to_string(std::shared_ptr<Statement> stmt) {
+    auto stmt_combine = std::make_shared<Combine>();
+
+    expand(stmt, stmt_combine);
+
+    std::string result;
+    for (auto& i: *stmt_combine) {
+        result += stmt_to_string(i);
+        result += " ";
+    }
+    
+    return result;
 }
